@@ -63,6 +63,8 @@ featuresets = [(find_features(rev), category) for (rev, category) in documents]
 training_set = featuresets[:1900]
 testing_set =  featuresets[1900:]
 
+print(featuresets[0])
+
 
 #classifier = nltk.NaiveBayesClassifier.train(training_set)
 

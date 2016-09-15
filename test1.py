@@ -16,6 +16,13 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn import svm
 from sklearn.metrics import classification_report
 
+from nltk.corpus import nps_chat
+import sentiment_mod as s
+posts = nps_chat.xml_posts()
+
+
+
+
 def usage():
     print("Usage:")
     print("python %s <data_dir>" % sys.argv[0])
@@ -32,7 +39,8 @@ if __name__ == '__main__':
     # Read the data
     train_data = []
     train_labels = []
-    test_data = []
+    test_data =  []# ["Habitat depicts the post- apolyptic world after World War III." ,"The main protogonist is a boy from Varda who aims to find his parents.","His journey is not without challenges.","He has to fight prirates, dictators and last but the least the demons.","It is a fun thrilling and exciting movie.","Everyine should definitely watch it."]
+
     test_labels = []
     for curr_class in classes:
         dirname = os.path.join(data_dir, curr_class)
@@ -51,6 +59,30 @@ if __name__ == '__main__':
                                  max_df = 0.8,
                                  sublinear_tf=True,
                                  use_idf=True)
+    '''test_data = []
+    for sen in posts:
+        test_data.append(sen)'''
+    test_data = ["VADER is smart, handsome, and funny.", # positive sentence example
+    "VADER is smart, handsome, and funny!", # punctuation emphasis handled correctly (sentiment intensity adjusted)
+    "VADER is very smart, handsome, and funny.",  # booster words handled correctly (sentiment intensity adjusted)
+    "VADER is VERY SMART, handsome, and FUNNY.",  # emphasis for ALLCAPS handled
+    "VADER is VERY SMART, handsome, and FUNNY!!!",# combination of signals - VADER appropriately adjusts intensity
+    "VADER is VERY SMART, really handsome, and INCREDIBLY FUNNY!!!",# booster words & punctuation make this close to ceiling for score
+    "The book was good.",         # positive sentence
+    "The book was kind of good.", # qualified positive sentence is handled correctly (intensity adjusted)
+    "The plot was good, but the characters are uncompelling and the dialog is not great.", # mixed negation sentence
+    "A really bad, horrible book.",       # negative sentence with booster words
+    "At least it isn't a horrible book.", # negated negative sentence with contraction
+    ":) and :D",     # emoticons handled
+    "",              # an empty string is correctly handled
+    "Today sux",     #  negative slang handled
+    "Today sux!",    #  negative slang with punctuation emphasis handled
+    "Today SUX!",    #  negative slang with capitalization emphasis
+    "Today kinda sux! But I'll get by, lol" # mixed sentiment example with slang and constrastive conjunction "but"
+ ]
+
+    #test_data =  ["Habitat depicts the post- apolyptic world after World War III." ,"The main protogonist is a boy from Varda who aims to find his parents.","His journey is not without challenges.","He has to fight prirates, dictators and last but the least the demons.","It is a fun thrilling and exciting movie.","Everyine should definitely watch it."]
+
     train_vectors = vectorizer.fit_transform(train_data)
     test_vectors = vectorizer.transform(test_data)
 
@@ -60,6 +92,7 @@ if __name__ == '__main__':
     classifier_rbf.fit(train_vectors, train_labels)
     t1 = time.time()
     prediction_rbf = classifier_rbf.predict(test_vectors)
+    print (prediction_rbf)
     t2 = time.time()
     time_rbf_train = t1-t0
     time_rbf_predict = t2-t1

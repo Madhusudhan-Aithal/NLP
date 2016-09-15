@@ -21,10 +21,10 @@ def animate(i):
     for l in lines[-200:]:
         x += 1
         if "pos" in l:
-            y += 1
+            y +=  1
         elif "neg" in l:
             y -= 1
-
+        #print ((x), (y))
         xar.append(x)
         yar.append(y)
         
